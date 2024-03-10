@@ -23,6 +23,10 @@ const Product = new mongoose.Schema(
       type: String,
       required: false,
     },
+    sku_prefix: {
+      type: Number,
+      required: false,
+    },
     sku: {
       type: String,
       required: false,
@@ -41,6 +45,32 @@ const Product = new mongoose.Schema(
   },
   { timestamps: true }
 );
+
+Product.pre("save", async function (next) {
+  if (!this.isNew) {
+    return next();
+  }
+
+  try {
+    const lastProduct = await this.constructor.findOne(
+      {},
+      {},
+      { sort: { sku_prefix: -1 } }
+    );
+    let zeroToAdd = Math.max(0, 2);
+    if (lastProduct) {
+      let new_product_sku = Number(lastProduct.sku_prefix + 1);
+      this.sku = "0".repeat(zeroToAdd) + new_product_sku;
+      this.sku_prefix = new_product_sku;
+    } else {
+      this.sku_prefix = 1;
+      this.sku = "0".repeat(zeroToAdd) + 1;
+    }
+    next();
+  } catch (err) {
+    next(err);
+  }
+});
 
 const product = mongoose.model("Product", Product);
 

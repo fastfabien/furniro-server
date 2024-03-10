@@ -3,8 +3,40 @@ const db = require("../models/index.js");
 const Product = db.product;
 
 const getProducts = asyncHandler(async (req, res) => {
-  const products = await Product.find();
-  res.status(200).json(products);
+  const page = parseInt(req.query.page) || 1; // Page demandée, par défaut à la page 1
+  const limit = parseInt(req.query.limit) || 3; // Nombre d'éléments par page, par défaut à 10
+
+  const startIndex = (page - 1) * limit; // Index de départ pour la pagination
+  const endIndex = page * limit; // Index de fin pour la pagination
+
+  const totalProducts = await Product.countDocuments(); // Total des produits dans la base de données
+
+  const products = await Product.find().skip(startIndex).limit(limit); // Obtenir les produits pour la page demandée
+  const simplifiedProduct = products.map((product) => ({
+    image: product.images[0],
+    name: product.name,
+    price: product.price,
+  }));
+
+  // Obtenir les informations de pagination
+  const pagination = {};
+  if (endIndex < totalProducts) {
+    pagination.next = {
+      page: page + 1,
+      limit: limit,
+    };
+  }
+  if (startIndex > 0) {
+    pagination.prev = {
+      page: page - 1,
+      limit: limit,
+    };
+  }
+
+  res.status(200).json({
+    pagination,
+    simplifiedProduct,
+  });
 });
 
 const getProduct = asyncHandler(async (req, res) => {
@@ -14,7 +46,7 @@ const getProduct = asyncHandler(async (req, res) => {
 
 const createProduct = asyncHandler(async (req, res) => {
   const files = req.files;
-  const { name, description, short_description, price, size, sku } = req.body;
+  const { name, description, short_description, price, size } = req.body;
   if (!req.body.name || !req.body.description || !req.body.price) {
     res.status(400);
     throw new Error("Please enter a product");
@@ -26,7 +58,6 @@ const createProduct = asyncHandler(async (req, res) => {
     short_description: short_description,
     price: price,
     size: size.split(","),
-    sku: sku,
   });
 
   for (let i = 0; i < files.length; i++) {

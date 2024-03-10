@@ -18,10 +18,7 @@ const Product = new mongoose.Schema(
       type: Number,
       required: [true, "Please add product price"],
     },
-    size: {
-      type: String,
-      required: false,
-    },
+    size: [{ type: [String], enum: ["M", "L", "XL", "XXL"], required: true }],
     color: {
       type: String,
       required: false,
@@ -32,6 +29,7 @@ const Product = new mongoose.Schema(
     },
     images: [
       {
+        data: Buffer,
         type: Buffer,
         required: false,
       },

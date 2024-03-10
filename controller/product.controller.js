@@ -13,17 +13,33 @@ const getProduct = asyncHandler(async (req, res) => {
 });
 
 const createProduct = asyncHandler(async (req, res) => {
-  console.log(req.body);
+  const files = req.files;
+  const { name, description, short_description, price, size, sku } = req.body;
   if (!req.body.name || !req.body.description || !req.body.price) {
     res.status(400);
     throw new Error("Please enter a product");
   }
-  const product = await Product.create({
-    name: req.body.name,
-    description: req.body.description,
-    price: req.body.price,
+
+  const new_product = new Product({
+    name: name,
+    description: description,
+    short_description: short_description,
+    price: price,
+    size: size.split(","),
+    sku: sku,
   });
-  res.status(201).json(product);
+
+  for (let i = 0; i < files.length; i++) {
+    new_product.images.push(files[i].buffer);
+  }
+
+  try {
+    const savedProduct = await new_product.save();
+    res.status(201).json(savedProduct);
+  } catch (err) {
+    res.status(400);
+    throw new Error(err.message);
+  }
 });
 
 const updateProduct = asyncHandler(async (req, res) => {

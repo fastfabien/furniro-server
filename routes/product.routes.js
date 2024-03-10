@@ -8,12 +8,14 @@ const {
   updateProduct,
   deleteProduct,
 } = require("../controller/product.controller");
+const multer = require("multer");
+const upload = multer({ dest: "./my-uploads/" });
 
 router.get("/", getProducts);
 
 router.get("/:id", getProduct);
 
-router.post("/", createProduct);
+router.post("/", uploadFilesMiddleware.array("images", 20), createProduct);
 
 router.put("/:id", updateProduct);
 

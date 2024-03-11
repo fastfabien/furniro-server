@@ -17,6 +17,7 @@ const getProducts = asyncHandler(async (req, res) => {
     image: product.images[0],
     name: product.name,
     price: product.price,
+    id: product._id,
   }));
 
   // Obtenir les informations de pagination
@@ -45,6 +46,10 @@ const getProducts = asyncHandler(async (req, res) => {
 
 const getProduct = asyncHandler(async (req, res) => {
   const product = await Product.findById(req.params.id);
+  if (!product) {
+    res.status(400);
+    throw new Error("Product not found");
+  }
   res.status(200).json(product);
 });
 

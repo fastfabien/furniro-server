@@ -4,12 +4,13 @@ const Product = db.product;
 
 const getProducts = asyncHandler(async (req, res) => {
   const page = parseInt(req.query.page) || 1; // Page demandée, par défaut à la page 1
-  const limit = parseInt(req.query.limit) || 3; // Nombre d'éléments par page, par défaut à 10
+  const limit = parseInt(req.query.limit) || 8; // Nombre d'éléments par page, par défaut à 10
 
   const startIndex = (page - 1) * limit; // Index de départ pour la pagination
   const endIndex = page * limit; // Index de fin pour la pagination
 
   const totalProducts = await Product.countDocuments(); // Total des produits dans la base de données
+  const totalPages = Math.ceil(totalProducts / limit); // Nombre total de pages pour la pagination
 
   const products = await Product.find().skip(startIndex).limit(limit); // Obtenir les produits pour la page demandée
   const simplifiedProduct = products.map((product) => ({
@@ -34,7 +35,10 @@ const getProducts = asyncHandler(async (req, res) => {
   }
 
   res.status(200).json({
-    pagination,
+    pagination: {
+      totalPages: totalPages,
+      ...pagination,
+    },
     simplifiedProduct,
   });
 });

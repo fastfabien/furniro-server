@@ -28,6 +28,7 @@ connectDb();
 
 app.use("/api/products", require("./routes/product.routes.js"));
 app.use("/api/users", require("./routes/user.routes.js"));
+app.use("/api/variants", require("./routes/variant.routes.js"));
 
 app.use(errorHandler);
 

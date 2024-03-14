@@ -6,5 +6,6 @@ db.mongoose = mongoose;
 
 db.product = require("./product.models");
 db.user = require("./user.models");
+db.productVariant = require("./productVariant.models");
 
 module.exports = db;

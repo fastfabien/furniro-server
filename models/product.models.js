@@ -46,6 +46,12 @@ const Product = new mongoose.Schema(
   { timestamps: true }
 );
 
+Product.virtual("ProductVariant", {
+  ref: "ProductVariant",
+  localField: "_id",
+  foreignField: "parent",
+});
+
 Product.pre("save", async function (next) {
   if (!this.isNew) {
     return next();
@@ -57,7 +63,17 @@ Product.pre("save", async function (next) {
       {},
       { sort: { sku_prefix: -1 } }
     );
-    let zeroToAdd = Math.max(0, 2);
+
+    let zeroToAdd;
+
+    if (this.sku > 10 < 100) {
+      zeroToAdd = Math.max(0, 1);
+    } else if (this.sku > 100) {
+      zeroToAdd = Math.max(0, 0);
+    } else {
+      zeroToAdd = Math.max(0, 2);
+    }
+
     if (lastProduct) {
       let new_product_sku = Number(lastProduct.sku_prefix + 1);
       this.sku = "0".repeat(zeroToAdd) + new_product_sku;

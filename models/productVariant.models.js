@@ -23,6 +23,12 @@ const ProductVariant = new mongoose.Schema({
   },
 });
 
+ProductVariant.virtual("CartItem", {
+  ref: "CartItem",
+  localField: "_id",
+  foreignField: "product",
+});
+
 const productVariant = mongoose.model("ProductVariant", ProductVariant);
 
 module.exports = productVariant;

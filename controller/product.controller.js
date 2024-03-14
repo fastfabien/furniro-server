@@ -12,7 +12,7 @@ const getProducts = asyncHandler(async (req, res) => {
   const totalProducts = await Product.countDocuments(); // Total des produits dans la base de données
   const totalPages = Math.ceil(totalProducts / limit); // Nombre total de pages pour la pagination
 
-  const products = await Product.find().skip(startIndex).limit(limit); // Obtenir les produits pour la page demandée
+  const products = await Product.find().skip(startIndex).limit(limit);
   const simplifiedProduct = products.map((product) => ({
     image: product.images[0],
     name: product.name,

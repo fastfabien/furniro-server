@@ -19,6 +19,12 @@ const User = new mongoose.Schema(
   { timestamps: true }
 );
 
+User.virtual("Cart", {
+  ref: "Cart",
+  localField: "_id",
+  foreignField: "user",
+});
+
 const user = mongoose.model("User", User);
 
 module.exports = user;

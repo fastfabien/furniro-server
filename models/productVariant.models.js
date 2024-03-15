@@ -21,6 +21,11 @@ const ProductVariant = new mongoose.Schema({
     required: [true, "Please add Parent product"],
     ref: "Product",
   },
+  couverture: {
+    data: Buffer,
+    type: Buffer,
+    required: true,
+  },
 });
 
 ProductVariant.virtual("CartItem", {

@@ -1,15 +1,17 @@
 const asyncHandler = require("express-async-handler");
 const db = require("../models/index.js");
 const Cart = db.cart;
+const Variant = db.productVariant;
 
 const getUserCart = asyncHandler(async (req, res) => {
   try {
     const cart = await Cart.findOne({ user: req.user.id })
       .populate({
         path: "items.product",
-        select: "images",
+        select: "couverture name price",
       })
       .exec();
+
     res.status(200).json(cart);
   } catch (err) {
     res.status(400);
@@ -18,39 +20,49 @@ const getUserCart = asyncHandler(async (req, res) => {
 });
 
 const addToCart = asyncHandler(async (req, res) => {
-  const user_id = req.user.id;
-  const { product_id, quantity } = req.body;
+  const user_id = req.user?.id;
+  let { product_id, size, quantity } = req.body;
 
-  if (!product_id || !quantity) {
-    res.status(400);
-    throw new Error("Please provide the required info.");
+  if (!product_id || !quantity || !size) {
+    return res
+      .status(400)
+      .json({ message: "Please provide product_id, size, and quantity." });
+  }
+
+  const variant = await Variant.findOne({ parent: product_id, size: size });
+  if (!variant) {
+    return res.status(400).json({ message: "Product variant not found." });
   }
 
   let cart = await Cart.findOne({ user: user_id });
-
   if (!cart) {
     cart = new Cart({
       user: user_id,
-      items: [{ product: product_id, quantity: quantity }],
+      items: [{ product: variant._id, quantity: quantity }],
+      total: variant.price * Number(quantity),
     });
   } else {
     const itemIndex = cart.items.findIndex(
-      (item) => item.product.toString() === product_id
+      (item) => item.product.toString() === variant._id.toString()
     );
-
     if (itemIndex > -1) {
       cart.items[itemIndex].quantity += Number(quantity);
+      cart.total += variant.price * Number(quantity);
     } else {
-      cart.items.push({ product: product_id, quantity: quantity });
+      cart.items.push({ product: variant._id, quantity: quantity });
+      cart.total += variant.price * Number(quantity);
     }
   }
 
   try {
     await cart.save();
-    res.status(200).json(cart);
+    const populatedCart = await Cart.findById(cart._id).populate({
+      path: "items.product",
+      select: "couverture name price",
+    });
+    res.status(200).json(populatedCart);
   } catch (err) {
-    res.status(400);
-    throw new Error(err.message);
+    res.status(500).json({ message: err.message });
   }
 });
 

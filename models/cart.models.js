@@ -21,6 +21,10 @@ const Cart = new mongoose.Schema({
     unique: true,
   },
   items: [CartItem],
+  total: {
+    type: Number,
+    required: [true, "Total not provided"],
+  },
 });
 
 const cart = mongoose.model("Cart", Cart);

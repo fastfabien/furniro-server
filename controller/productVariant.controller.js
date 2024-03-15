@@ -11,30 +11,13 @@ const generateAllVariant = asyncHandler(async (req, res) => {
     throw new Error("No product available");
   }
 
-  // products.map((product) => {
-  //   product.size[0].map((variant) => {
-  //     let name = product.name + " " + variant;
-  //     const size = variant;
-  //     const parent = product._id;
-  //     const price = product.price;
-
-  //     const new_variant = new Variant({
-  //       name: name,
-  //       size: size,
-  //       parent: parent,
-  //       price: price,
-  //     });
-
-  //     variantToSaves.push(new_variant);
-  //   });
-  // });
-
   for (const product of products) {
     for (const variant of product.size[0]) {
       let name = product.name + " " + variant;
       const size = variant;
       const parent = product._id;
       const price = product.price;
+      const image = product.images[0];
 
       const variantAlreadyExist = await Variant.findOne({ name: name });
 
@@ -44,6 +27,7 @@ const generateAllVariant = asyncHandler(async (req, res) => {
           size: size,
           parent: parent,
           price: price,
+          couverture: image,
         });
         variantToSaves.push(new_variant);
       }

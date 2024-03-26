@@ -8,5 +8,6 @@ db.product = require("./product.models");
 db.user = require("./user.models");
 db.productVariant = require("./productVariant.models");
 db.cart = require("./cart.models");
+db.billingAddress = require("./billingAddress.model");
 
 module.exports = db;

@@ -25,6 +25,12 @@ User.virtual("Cart", {
   foreignField: "user",
 });
 
+User.virtual("billingAddress", {
+  ref: "BillingAddress",
+  localField: "_id",
+  foreignField: "user",
+});
+
 const user = mongoose.model("User", User);
 
 module.exports = user;

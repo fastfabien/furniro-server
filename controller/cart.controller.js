@@ -8,7 +8,7 @@ const getUserCart = asyncHandler(async (req, res) => {
     const cart = await Cart.findOne({ user: req.user.id })
       .populate({
         path: "items.product",
-        select: "couverture name price",
+        select: "_id couverture name price",
       })
       .exec();
 
@@ -58,7 +58,7 @@ const addToCart = asyncHandler(async (req, res) => {
     await cart.save();
     const populatedCart = await Cart.findById(cart._id).populate({
       path: "items.product",
-      select: "couverture name price",
+      select: "couverture name price _id",
     });
     res.status(200).json(populatedCart);
   } catch (err) {
@@ -97,7 +97,11 @@ const removeToCart = asyncHandler(async (req, res) => {
   } else {
     try {
       await cart.save();
-      res.status(200).json(cart);
+      const populatedCart = await Cart.findById(cart._id).populate({
+        path: "items.product",
+        select: "couverture name price _id",
+      });
+      res.status(200).json(populatedCart);
     } catch (err) {
       res.status(400);
       throw new Error(err.message);

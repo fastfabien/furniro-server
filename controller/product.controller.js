@@ -3,24 +3,26 @@ const db = require("../models/index.js");
 const Product = db.product;
 
 const getProducts = asyncHandler(async (req, res) => {
-  const page = parseInt(req.query.page) || 1; // Page demandée, par défaut à la page 1
-  const limit = parseInt(req.query.limit) || 8; // Nombre d'éléments par page, par défaut à 10
+  const page = parseInt(req.query.page) || 1;
+  const limit = parseInt(req.query.limit) || 8;
+  const name = req.query.name;
 
-  const startIndex = (page - 1) * limit; // Index de départ pour la pagination
-  const endIndex = page * limit; // Index de fin pour la pagination
+  const filteredProduct = [];
 
-  const totalProducts = await Product.countDocuments(); // Total des produits dans la base de données
-  const totalPages = Math.ceil(totalProducts / limit); // Nombre total de pages pour la pagination
+  const startIndex = (page - 1) * limit;
+  const endIndex = page * limit;
+
+  const totalProducts = await Product.countDocuments();
+  const totalPages = Math.ceil(totalProducts / limit);
 
   const products = await Product.find().skip(startIndex).limit(limit);
   const simplifiedProduct = products.map((product) => ({
     image: product.images[0],
     name: product.name,
     price: product.price,
-    id: product._id,
+    _id: product._id,
   }));
 
-  // Obtenir les informations de pagination
   const pagination = {};
   if (endIndex < totalProducts) {
     pagination.next = {
@@ -35,13 +37,25 @@ const getProducts = asyncHandler(async (req, res) => {
     };
   }
 
-  res.status(200).json({
-    pagination: {
-      totalPages: totalPages,
-      ...pagination,
-    },
-    simplifiedProduct,
-  });
+  if (name) {
+    for (let i = 0; i < simplifiedProduct.length; i++) {
+      if (simplifiedProduct[i].name.toLowerCase().includes(name)) {
+        filteredProduct.push(simplifiedProduct[i]);
+      }
+    }
+
+    if (filteredProduct.length > 0) {
+      return res.status(200).json(filteredProduct);
+    }
+  } else {
+    return res.status(200).json({
+      pagination: {
+        totalPages: totalPages,
+        ...pagination,
+      },
+      simplifiedProduct,
+    });
+  }
 });
 
 const getProduct = asyncHandler(async (req, res) => {

@@ -4,6 +4,11 @@ const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY);
 
 dotenv.config();
 
+const FRONTEND_URL =
+  process.env.FRONTEND_URL || "https://furniro-server-3hwp.onrender.com";
+
+console.log(FRONTEND_URL);
+
 const createPaymencreateCheckoutSession = asyncHandler(async (req, res) => {
   const { total, billingAddress, cartId } = req.body;
   const session = await stripe.checkout.sessions.create({
@@ -21,8 +26,8 @@ const createPaymencreateCheckoutSession = asyncHandler(async (req, res) => {
       },
     ],
     mode: "payment",
-    success_url: `${process.env.FRONTEND_URL}/success?id=${cartId}&address=${billingAddress}`,
-    cancel_url: `${process.env.FRONTEND_URL}/cancel`,
+    success_url: `${FRONTEND_URL}/success?id=${cartId}&address=${billingAddress}`,
+    cancel_url: `${FRONTEND_URL}/cancel`,
   });
   return res.status(200).json({ id: session.id });
 });

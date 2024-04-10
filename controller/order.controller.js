@@ -29,8 +29,8 @@ const createOrder = asyncHandler(async (req, res) => {
   });
 
   await order.save();
-  await Cart.deleteOne({ id: cart._id });
-  res.status(200).json(order);
+  const deletedCart = await Cart.deleteOne({ _id: cart._id });
+  res.status(200).json(cart);
 });
 
 module.exports = { createOrder };

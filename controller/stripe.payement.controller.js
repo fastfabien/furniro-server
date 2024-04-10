@@ -1,9 +1,11 @@
 const asyncHandler = require("express-async-handler");
+const dotenv = require("dotenv");
 const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY);
+
+dotenv.config();
 
 const createPaymencreateCheckoutSession = asyncHandler(async (req, res) => {
   const { total, billingAddress, cartId } = req.body;
-  const orderInfo = [billingAddress, cartId];
   const session = await stripe.checkout.sessions.create({
     payment_method_types: ["card"],
     line_items: [
@@ -19,7 +21,7 @@ const createPaymencreateCheckoutSession = asyncHandler(async (req, res) => {
       },
     ],
     mode: "payment",
-    success_url: `${process.env.FRONTEND_URL}/success/${orderInfo}`,
+    success_url: `${process.env.FRONTEND_URL}/success?id=${cartId}&address=${billingAddress}`,
     cancel_url: `${process.env.FRONTEND_URL}/cancel`,
   });
   return res.status(200).json({ id: session.id });

@@ -18,7 +18,6 @@ const Order = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     required: false,
     ref: "User",
-    unique: true,
   },
   address: {
     type: mongoose.Schema.Types.ObjectId,

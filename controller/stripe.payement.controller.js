@@ -5,9 +5,7 @@ const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY);
 dotenv.config();
 
 const FRONTEND_URL =
-  process.env.FRONTEND_URL || "https://furniro-fast.vercel.app/";
-
-console.log(FRONTEND_URL);
+  process.env.FRONTEND_URL || "https://furniro-fast.vercel.app";
 
 const createPaymencreateCheckoutSession = asyncHandler(async (req, res) => {
   const { total, billingAddress, cartId } = req.body;

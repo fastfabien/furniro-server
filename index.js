@@ -31,6 +31,8 @@ app.use("/api/users", require("./routes/user.routes.js"));
 app.use("/api/variants", require("./routes/variant.routes.js"));
 app.use("/api/cart", require("./routes/cart.routes.js"));
 app.use("/api/billingAddress", require("./routes/billingAddress.routes.js"));
+app.use("/api/create-checkout-session", require("./routes/stripe.routes.js"));
+app.use("/api/order", require("./routes/order.routes.js"));
 
 app.use(errorHandler);
 

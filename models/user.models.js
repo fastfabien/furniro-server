@@ -25,6 +25,12 @@ User.virtual("Cart", {
   foreignField: "user",
 });
 
+User.virtual("Order", {
+  ref: "Order",
+  localField: "_id",
+  foreignField: "user",
+});
+
 User.virtual("billingAddress", {
   ref: "BillingAddress",
   localField: "_id",

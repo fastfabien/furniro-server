@@ -39,7 +39,7 @@ const createBillingAddress = asyncHandler(async (req, res) => {
 
   try {
     await billingAddress.save();
-    res.status(201).json(billingAddress);
+    res.status(201).json(billingAddress._id);
   } catch (err) {
     res.status(400);
     throw new Error(err.message);

@@ -35,11 +35,11 @@ const BillingAddress = new mongoose.Schema({
     required: [true, "Please enter province"],
   },
   zip_code: {
-    type: Number,
+    type: String,
     required: [true, "Please enter zip code"],
   },
   phone: {
-    type: Number,
+    type: String,
     required: [true, "Please enter phone number"],
   },
   email: {
@@ -50,6 +50,12 @@ const BillingAddress = new mongoose.Schema({
     type: String,
     required: false,
   },
+});
+
+BillingAddress.virtual("Order", {
+  ref: "Order",
+  localField: "_id",
+  foreignField: "address",
 });
 
 const billingAddress = mongoose.model("BillingAddress", BillingAddress);

@@ -9,5 +9,6 @@ db.user = require("./user.models");
 db.productVariant = require("./productVariant.models");
 db.cart = require("./cart.models");
 db.billingAddress = require("./billingAddress.model");
+db.order = require("./order.model");
 
 module.exports = db;

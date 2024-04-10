@@ -5,7 +5,7 @@ const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY);
 dotenv.config();
 
 const FRONTEND_URL =
-  process.env.FRONTEND_URL || "https://furniro-server-3hwp.onrender.com";
+  process.env.FRONTEND_URL || "https://furniro-fast.vercel.app/";
 
 console.log(FRONTEND_URL);
 

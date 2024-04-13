@@ -125,10 +125,30 @@ const deleteProduct = asyncHandler(async (req, res) => {
   res.status(200).json({ id: req.params.id });
 });
 
+const addCoverPicture = asyncHandler(async (req, res) => {
+  const products = await Product.find();
+
+  if (!products) {
+    res.status(400);
+    throw new Error("No product found!");
+  }
+
+  const addCoverPromise = products.map((product) => {
+    if (product.images.length > 0) {
+      product.image_couverture = product.images[0];
+      return product.save();
+    }
+  });
+
+  await Promise.all(addCoverPromise);
+  return res.status(200).json(products);
+});
+
 module.exports = {
   getProducts,
   getProduct,
   createProduct,
   updateProduct,
   deleteProduct,
+  addCoverPicture,
 };

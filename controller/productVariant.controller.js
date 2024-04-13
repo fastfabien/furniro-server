@@ -57,4 +57,21 @@ const getAllVariant = asyncHandler(async (req, res) => {
   res.status(200).json(productVariants);
 });
 
-module.exports = { generateAllVariant, getAllVariant };
+const getProductVariantCouverture = asyncHandler(async (req, res) => {
+  const variant = await Variant.findOne({
+    name: req.params.name.toLocaleLowerCase(),
+  });
+
+  if (!variant) {
+    res.status(400);
+    throw new Error("Variant not found!");
+  }
+
+  res.status(200).json(variant.couverture);
+});
+
+module.exports = {
+  generateAllVariant,
+  getAllVariant,
+  getProductVariantCouverture,
+};

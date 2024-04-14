@@ -109,4 +109,40 @@ const removeToCart = asyncHandler(async (req, res) => {
   }
 });
 
-module.exports = { addToCart, removeToCart, getUserCart };
+const createCartAndReturnId = asyncHandler(async (req, res) => {
+  const { items, total } = req.body;
+  let itemsArray = [];
+
+  let newCart = new Cart({
+    total: total,
+  });
+
+  await Promise.all(
+    items.map(async (item, index) => {
+      let variant = await Variant.findOne({ name: item.product.name });
+      if (!variant) {
+        res.status(400);
+        throw new Error("Product variant not found!");
+      }
+
+      let cartItem = {
+        product: variant._id,
+        quantity: item.quantity,
+      };
+
+      itemsArray.push(cartItem);
+    })
+  );
+
+  newCart.items = itemsArray;
+
+  await newCart.save();
+  return res.status(201).json(newCart._id);
+});
+
+module.exports = {
+  addToCart,
+  removeToCart,
+  getUserCart,
+  createCartAndReturnId,
+};
